@@ -1,16 +1,7 @@
-// We're collecting different fruits to bake a delicious fruit cake. For this,
-// we have a basket, which we'll represent in the form of a hash map. The key
-// represents the name of each fruit we collect and the value represents how
-// many of that particular fruit we have collected. Three types of fruits -
-// Apple (4), Mango (2) and Lychee (5) are already in the basket hash map. You
-// must add fruit to the basket so that there is at least one of each kind and
-// more than 11 in total - we have a lot of mouths to feed. You are not allowed
-// to insert any more of the fruits that are already in the basket (Apple,
-// Mango, and Lyche).
-
 use std::collections::HashMap;
+use std::iter::FromIterator;
 
-#[derive(Hash, PartialEq, Eq, Debug)]
+#[derive(Hash, PartialEq, Eq, Debug, Clone)]
 enum Fruit {
     Apple,
     Banana,
@@ -28,22 +19,36 @@ fn fruit_basket(basket: &mut HashMap<Fruit, u32>) {
         Fruit::Pineapple,
     ];
 
-    for fruit in fruit_kinds {
-        // TODO: Insert new fruits if they are not already present in the
-        // basket. Note that you are not allowed to put any type of fruit that's
-        // already present!
+    for fruit in fruit_kinds.iter() {
+        // Se a fruta não estiver no cesto, adicionamos com uma quantidade mínima de 1
+        if !basket.contains_key(fruit) {
+            basket.insert(fruit.clone(), 1);
+        }
+    }
+
+    // Verifica o número total de frutas
+    let total_fruits: u32 = basket.values().sum();
+
+    // Se o total for menor que 12, adiciona frutas adicionais
+    if total_fruits <= 11 {
+        // Por exemplo, podemos adicionar bananas até que o total de frutas seja maior que 11
+        let current_bananas = basket.get(&Fruit::Banana).unwrap_or(&0);
+        let bananas_to_add = 12 - total_fruits - current_bananas;
+        if bananas_to_add > 0 {
+            basket.insert(Fruit::Banana, current_bananas + bananas_to_add);
+        }
     }
 }
 
 fn main() {
-    // You can optionally experiment here.
+    // Aqui você pode experimentar, se necessário
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    // Don't modify this function!
+    // Não modifique esta função!
     fn get_fruit_basket() -> HashMap<Fruit, u32> {
         let content = [(Fruit::Apple, 4), (Fruit::Mango, 2), (Fruit::Lychee, 5)];
         HashMap::from_iter(content)
@@ -87,8 +92,8 @@ mod tests {
         let mut basket = get_fruit_basket();
         fruit_basket(&mut basket);
 
-        for fruit_kind in fruit_kinds {
-            let Some(amount) = basket.get(&fruit_kind) else {
+        for fruit_kind in fruit_kinds.iter() {
+            let Some(amount) = basket.get(fruit_kind) else {
                 panic!("Fruit kind {fruit_kind:?} was not found in basket");
             };
             assert!(*amount > 0);
