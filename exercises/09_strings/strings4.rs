@@ -1,5 +1,5 @@
 // Calls of this function should be replaced with calls of `string_slice` or `string`.
-fn placeholder() {}
+fn placeholder(String: String) {}
 
 fn string_slice(arg: &str) {
     println!("{arg}");
@@ -27,9 +27,9 @@ fn main() {
 
     // WARNING: This is byte indexing, not character indexing.
     // Character indexing can be done using `s.chars().nth(INDEX)`.
-    placeholder(&String::from("abc")[0..1]);
+    string_slice(&String::from("abc")[0..1]);
 
-    placeholder("  hello there ".trim());
+    string_slice("  hello there ".trim());
 
     placeholder("Happy Monday!".replace("Mon", "Tues"));
 
